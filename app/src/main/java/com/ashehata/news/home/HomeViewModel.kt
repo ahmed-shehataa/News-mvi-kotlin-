@@ -1,11 +1,13 @@
 package com.ashehata.news.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.ashehata.news.base.BaseViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(private val useCase: HomeUseCase) : ViewModel() {
+class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCase) : BaseViewModel() {
 
     /**
      *
@@ -23,9 +25,26 @@ class HomeViewModel @Inject constructor(private val useCase: HomeUseCase) : View
             data = null,
             error = null
         )
+        //getData()
     }
 
     fun getData() {
+        useCase.getNews(viewModelScope = viewModelScope,
+            currentViewState = getCurrentState(),
+            updateState = {
+                // Push state to mutable live data
+                _viewState.postValue(it)
+            }
+        )
+    }
 
+    fun serRefreshing() {
+        viewModelScope.launch {
+            delay(2000)
+            _viewState.value = getCurrentState()?.copy(
+                isRefreshing = false,
+                isLoading = false
+            )
+        }
     }
 }

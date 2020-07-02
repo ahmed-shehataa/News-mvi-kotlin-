@@ -1,6 +1,6 @@
 package com.ashehata.news.dataSource
 
-import BreakingNewsReponse
+import com.ashehata.news.models.breakingNews.BreakingNewsReponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -8,6 +8,6 @@ import retrofit2.http.Query
 interface RemoteData {
 
     @GET("top-headlines")
-    fun getBreakingNews(@Query("country") country: String = "us")
-            : Flow<BreakingNewsReponse>
+    suspend fun getBreakingNews(@Query("country") country: String = "us")
+            : BreakingNewsReponse
 }

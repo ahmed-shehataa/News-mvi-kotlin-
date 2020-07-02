@@ -1,4 +1,6 @@
 package com.ashehata.news.base
 
-class BaseFragment {
+import androidx.fragment.app.Fragment
+
+class BaseFragment : Fragment() {
 }

@@ -1,3 +1,5 @@
+package com.ashehata.news.models.breakingNews
+
 import com.squareup.moshi.Json
 
 data class BreakingNewsReponse (

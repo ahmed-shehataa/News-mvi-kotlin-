@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">News</string>
     <string name="fake_txt">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s</string>
+    <string name="no_internet">No internet connection</string>
 </resources>
