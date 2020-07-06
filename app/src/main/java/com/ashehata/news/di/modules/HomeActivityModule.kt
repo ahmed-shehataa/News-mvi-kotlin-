@@ -1,6 +1,7 @@
 package com.ashehata.news.di.modules
 
 import com.ashehata.news.dataSource.RemoteData
+import com.ashehata.news.home.HomeAdapter
 import com.ashehata.news.home.HomeRepository
 import com.ashehata.news.home.HomeUseCase
 import dagger.Module
@@ -17,4 +18,7 @@ class HomeActivityModule {
 
     @Provides
     fun provideRepo(remoteData: RemoteData) = HomeRepository(remoteData)
+
+    @Provides
+    fun provideAdapter() = HomeAdapter()
 }

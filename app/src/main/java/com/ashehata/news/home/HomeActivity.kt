@@ -11,13 +11,15 @@ import com.ashehata.news.externals.ErrorType
 import com.ashehata.news.externals.showMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_home.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity() {
 
     private val viewModel: HomeViewModel by viewModels()
-    private lateinit var adapter: HomeAdapter
+    @Inject
+    lateinit var adapter: HomeAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +27,6 @@ class HomeActivity : BaseActivity() {
 
         setUpRv()
         setRefreshing()
-        getNews()
         updateUi()
     }
 
@@ -35,13 +36,8 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    private fun getNews() {
-        viewModel.getData()
-    }
-
     private fun setUpRv() {
         rv_articles.setHasFixedSize(true)
-        adapter = HomeAdapter()
         rv_articles.adapter = adapter
     }
 
@@ -60,7 +56,7 @@ class HomeActivity : BaseActivity() {
                 //rv_articles.adapter = adapter
             }
 
-            val message = when(it?.error) {
+            val message = when(it.error) {
                 is ErrorType.NoConnection -> getString(R.string.no_internet)
                 is ErrorType.Error -> (it.error as ErrorType.Error).message
                 null -> ""
@@ -71,7 +67,5 @@ class HomeActivity : BaseActivity() {
 
         })
     }
-
-
 
 }

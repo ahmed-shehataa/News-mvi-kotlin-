@@ -26,6 +26,7 @@ class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCas
             error = null
         )
         //getData()
+        getData()
     }
 
     fun getData() {
