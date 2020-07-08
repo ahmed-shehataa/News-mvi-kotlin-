@@ -3,49 +3,74 @@ package com.ashehata.news.home
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.ashehata.news.base.BaseViewModel
+import com.ashehata.news.externals.ErrorType
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCase) : BaseViewModel() {
+class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCase) :
+    BaseViewModel() {
 
-    /**
-     *
-     */
-    private val _viewState = MutableLiveData<HomeViewState?>()
-    val viewState: LiveData<HomeViewState?> = _viewState
-    private fun getCurrentState() = _viewState.value
+    private val _stateChannel = MutableStateFlow<HomeViewState?>(null)
+    val stateChannel: StateFlow<HomeViewState?> = _stateChannel
+    val intentChannel = Channel<HomeIntent>(CONFLATED)
+    private fun getState() = _stateChannel.value
 
 
     init {
-        // To init
-        _viewState.value = HomeViewState(
-            isLoading = true,
-            isRefreshing = false,
-            data = null,
-            error = null
-        )
-        //getData()
-        getData()
-    }
 
-    fun getData() {
-        useCase.getNews(viewModelScope = viewModelScope,
-            currentViewState = getCurrentState(),
-            updateState = {
-                // Push state to mutable live data
-                _viewState.postValue(it)
-            }
-        )
-    }
-
-    fun serRefreshing() {
         viewModelScope.launch {
-            delay(2000)
-            _viewState.value = getCurrentState()?.copy(
-                isRefreshing = false,
-                isLoading = false
-            )
+            // Send the current model
+            _stateChannel.value = HomeViewState(isLoading = true)
+            // Start intent listening
+            intentChannel.consumeAsFlow().collect { intent ->
+                when (intent) {
+                    is HomeIntent.RequestNews -> getData()
+                    is HomeIntent.RequestRefresh -> setRefreshing()
+
+                }
+            }
         }
+        //...
+    }
+
+    private suspend fun getData() {
+        // Collect the data
+        useCase.getNews().catch {
+            _stateChannel.value = getState()?.copy(
+                isLoading = false,
+                error = ErrorType.NoConnection
+            )
+
+        }.collect {
+            _stateChannel.value = getState()?.copy(
+                isLoading = false,
+                error = ErrorType.NoError,
+                data = it
+            )
+
+        }
+    }
+
+    private suspend fun setRefreshing() {
+        _stateChannel.value = getState()?.copy(
+            isRefreshing = true,
+            isLoading = false
+        )
+        // simulate get something
+        delay(2000)
+        _stateChannel.value = getState()?.copy(
+            isRefreshing = false,
+            isLoading = false
+        )
+
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // release memory
+        intentChannel.close()
     }
 }

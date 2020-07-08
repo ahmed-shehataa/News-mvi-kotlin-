@@ -8,17 +8,14 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Log
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.withContext
 
 
 class ConnectionStateMonitor(
-    private val context: Application
+    context: Application
 ) : NetworkCallback() {
 
     private var connectivityManager: ConnectivityManager? = null
     private var onInternetAvailable: OnInternetAvailable? = null
-    //private lateinit var action: () -> Unit
 
     private val networkRequest = lazy {
         NetworkRequest.Builder()
@@ -34,7 +31,7 @@ class ConnectionStateMonitor(
         register()
     }
 
-    fun setOnAvailable(onInternetAvailable: OnInternetAvailable){
+    fun getNetworkState(onInternetAvailable: OnInternetAvailable){
         this.onInternetAvailable = onInternetAvailable
     }
 
@@ -42,29 +39,26 @@ class ConnectionStateMonitor(
         connectivityManager?.registerNetworkCallback(networkRequest, this)
     }
 
-
-    /*
-    fun onConnected(yourAction: () -> Unit) {
-        //action = yourAction
-    }
-
-     */
-
-    // Likewise, you can have a disable method that simply calls ConnectivityManager.unregisterNetworkCallback(NetworkCallback) too.
-    override fun onAvailable(network: Network) {
-        // Do what you need to do here
-        //action()
-        // Notify the activity for internet connection
-        onInternetAvailable?.onAvailable()
-        Log.v("onAvailable", network.toString())
-    }
-
     fun unregister() {
         connectivityManager?.unregisterNetworkCallback(this)
     }
 
+    // Likewise, you can have a disable method that simply calls ConnectivityManager.unregisterNetworkCallback(NetworkCallback) too.
+    override fun onAvailable(network: Network) {
+        // Do what you need to do here
+        // Notify the activity for internet connection
+        onInternetAvailable?.onNetworkAvailable()
+        //Log.v("onAvailable", network.toString())
+    }
+
+    override fun onLost(network: Network) {
+        super.onLost(network)
+        onInternetAvailable?.onNetworkDisconnect()
+    }
+
     interface OnInternetAvailable {
-        fun onAvailable()
+        fun onNetworkAvailable()
+        fun onNetworkDisconnect()
     }
 
 }
