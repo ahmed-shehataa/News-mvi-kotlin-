@@ -18,12 +18,12 @@ import javax.inject.Inject
 /**
  * ListAdapter<Articles, HomeAdapter.ArticleViewHolder>(ArticleItemDiffCallback())
  */
-class HomeAdapter()
-    : ListAdapter<Articles, HomeAdapter.ArticleViewHolder>(ArticleItemDiffCallback()) {
+class HomeAdapter @Inject constructor(private val loadImage: RequestManager) :
+    ListAdapter<Articles, HomeAdapter.ArticleViewHolder>(ArticleItemDiffCallback()) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
-        return ArticleViewHolder(LayoutInflater.from(parent.context), parent)
+        return ArticleViewHolder(loadImage, LayoutInflater.from(parent.context), parent)
     }
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
@@ -31,27 +31,23 @@ class HomeAdapter()
         holder.bind(getItem(position))
     }
 
-    class ArticleViewHolder(inflater: LayoutInflater, parent: ViewGroup)
-        : RecyclerView.ViewHolder(inflater.inflate(R.layout.root_article, parent, false)) {
+    class ArticleViewHolder(
+        private val loadImage: RequestManager,
+        inflater: LayoutInflater, parent: ViewGroup
+    ) : RecyclerView.ViewHolder(inflater.inflate(R.layout.root_article, parent, false)) {
 
-
-        @Inject
-        lateinit var loadImage: RequestManager
         private var title: TextView = itemView.tv_title
         private var image: ImageView = itemView.iv_image
-
 
         fun bind(article: Articles) {
             title.text = article.title
 
-            /*
+
             loadImage
                 .load(article.urlToImage)
                 .centerCrop()
                 .placeholder(R.drawable.shape_placeholder)
                 .into(image);
-
-             */
 
         }
 

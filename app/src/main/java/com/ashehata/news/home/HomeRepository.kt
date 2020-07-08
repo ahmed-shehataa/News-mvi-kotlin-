@@ -18,6 +18,6 @@ class HomeRepository @Inject constructor(private val remoteData: RemoteData) {
             // Emit list of articles
             emit(response.articles)
 
-        }.flowOn(Dispatchers.IO)
+        }
     }
 }
