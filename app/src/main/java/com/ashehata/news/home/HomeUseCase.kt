@@ -23,4 +23,17 @@ class HomeUseCase @Inject constructor(private val repository: HomeRepository) {
         .flowOn(Dispatchers.IO)
 
 
+
+    suspend fun getSources() = repository.getSources()
+        .map {
+            return@map it.sortedBy {
+                it.name
+            }
+        }
+        /**
+         * Here u can filter or map or use any operator
+         * corresponding to your use case
+         */
+        .flowOn(Dispatchers.IO)
+
 }

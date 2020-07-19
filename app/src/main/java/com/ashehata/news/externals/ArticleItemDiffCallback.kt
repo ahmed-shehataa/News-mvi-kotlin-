@@ -1,15 +1,17 @@
 package com.ashehata.news.externals
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
 import com.ashehata.news.models.breakingNews.Articles
 
-class ArticleItemDiffCallback : DiffUtil.ItemCallback<Articles>() {
+class ArticleItemDiffCallback<T> : DiffUtil.ItemCallback<T>() {
 
-    override fun areItemsTheSame(oldItem: Articles, newItem: Articles): Boolean {
+    override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Articles, newItem: Articles): Boolean {
+    @SuppressLint("DiffUtilEquals")
+    override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
         return oldItem == newItem
     }
 }

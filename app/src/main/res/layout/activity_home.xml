@@ -7,19 +7,32 @@
     android:id="@+id/parent_view"
     tools:context=".home.HomeActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_sources"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        tools:listitem="@layout/root_source"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pb_refreshing"
+        />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/pb_refreshing"
         android:layout_width="match_parent"
+        android:layout_marginTop="12dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/rv_sources">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_articles"
             android:layout_width="match_parent"
+            tools:listitem="@layout/root_article"
             android:layout_height="wrap_content"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />

@@ -4,26 +4,23 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.ashehata.news.base.BaseViewModel
 import com.ashehata.news.externals.ErrorType
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCase) :
     BaseViewModel() {
 
-    private val _stateChannel = MutableStateFlow<HomeViewState?>(null)
+    private val _stateChannel = MutableStateFlow(HomeViewState(isLoading = true))
     val stateChannel: StateFlow<HomeViewState?> = _stateChannel
     val intentChannel = Channel<HomeIntent>(CONFLATED)
-    private fun getState() = _stateChannel.value
+    private fun getCurrentState() = _stateChannel.value
 
 
     init {
 
         viewModelScope.launch {
-            // Send the current model
-            _stateChannel.value = HomeViewState(isLoading = true)
             // Start intent listening
             intentChannel.consumeAsFlow().collect { intent ->
                 when (intent) {
@@ -38,30 +35,64 @@ class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCas
 
     private suspend fun getData() {
         // Collect the data
+        getSources()
+        getArticles()
+
+    }
+
+    private suspend fun getArticles() {
         useCase.getNews().catch {
-            _stateChannel.value = getState()?.copy(
-                isLoading = false,
-                error = ErrorType.NoConnection
-            )
+            catchError()
 
         }.collect {
-            _stateChannel.value = getState()?.copy(
+            _stateChannel.value = getCurrentState().copy(
                 isLoading = false,
+                isRefreshing = false,
                 error = ErrorType.NoError,
-                data = it
+                listArticles = it
+            )
+        }
+    }
+
+    private suspend fun getSources() {
+        useCase.getSources().catch {
+            catchError()
+
+        }.collect {
+            _stateChannel.value = getCurrentState().copy(
+                isLoading = false,
+                isRefreshing = false,
+                error = ErrorType.NoError,
+                listSources = it
             )
 
         }
     }
 
+    private fun catchError() {
+        _stateChannel.value = getCurrentState().copy(
+            isLoading = false,
+            isRefreshing = false,
+            error = ErrorType.NoConnection
+        )
+    }
+
     private suspend fun setRefreshing() {
-        _stateChannel.value = getState()?.copy(
+        // Update current state with loading bar
+        _stateChannel.value = getCurrentState().copy(
             isRefreshing = true,
             isLoading = false
         )
-        // simulate get something
-        delay(2000)
-        _stateChannel.value = getState()?.copy(
+
+        if (getCurrentState().listSources.isNullOrEmpty()) {
+            getSources()
+        }
+
+        if (getCurrentState().listArticles.isNullOrEmpty()) {
+            getArticles()
+        }
+
+        _stateChannel.value = getCurrentState().copy(
             isRefreshing = false,
             isLoading = false
         )

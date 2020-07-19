@@ -1,5 +1,6 @@
 package com.ashehata.news.home
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -19,7 +20,7 @@ import javax.inject.Inject
  * ListAdapter<Articles, HomeAdapter.ArticleViewHolder>(ArticleItemDiffCallback())
  */
 class HomeAdapter @Inject constructor(private val loadImage: RequestManager) :
-    ListAdapter<Articles, HomeAdapter.ArticleViewHolder>(ArticleItemDiffCallback()) {
+    ListAdapter<Articles, HomeAdapter.ArticleViewHolder>(ArticleItemDiffCallback<Articles>()) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
@@ -43,6 +44,7 @@ class HomeAdapter @Inject constructor(private val loadImage: RequestManager) :
             title.text = article.title
 
 
+            Log.i("glideAddress", System.identityHashCode(loadImage).toString())
             loadImage
                 .load(article.urlToImage)
                 .centerCrop()
