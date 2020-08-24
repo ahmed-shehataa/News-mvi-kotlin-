@@ -12,7 +12,7 @@ import javax.inject.Inject
 class HomeRepository @Inject constructor(private val remoteData: RemoteData) {
 
     suspend fun getNews() : Result<List<Articles>> {
-        return safeApiCall(Dispatchers.IO) {
+        return safeApiCall {
             remoteData.getBreakingNews().articles
         }
     }

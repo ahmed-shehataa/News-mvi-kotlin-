@@ -4,6 +4,7 @@ import android.view.View
 import com.bumptech.glide.load.HttpException
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
@@ -11,7 +12,7 @@ fun View.showMessage(message: String) {
     Snackbar.make(this, message, Snackbar.LENGTH_SHORT).show()
 }
 
-suspend fun <T> safeApiCall(dispatcher: CoroutineDispatcher, apiCall: suspend ()-> T): Result<T> {
+suspend fun <T> safeApiCall(dispatcher: CoroutineDispatcher = Dispatchers.IO, apiCall: suspend ()-> T): Result<T> {
     return withContext(dispatcher) {
         try {
             Result.Success(apiCall.invoke())
