@@ -11,17 +11,10 @@ import kotlin.coroutines.CoroutineContext
 class HomeUseCase @Inject constructor(private val repository: HomeRepository) {
 
     suspend fun getNews() = repository.getNews()
-        .map {
-            return@map it.sortedBy {
-                it.title
-            }
-        }
         /**
          * Here u can filter or map or use any operator
          * corresponding to your use case
          */
-        .flowOn(Dispatchers.IO)
-
 
 
     suspend fun getSources() = repository.getSources()

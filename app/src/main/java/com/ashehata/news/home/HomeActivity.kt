@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ashehata.news.R
 import com.ashehata.news.base.BaseActivity
+import com.ashehata.news.externals.ErrorEntity
 import com.ashehata.news.externals.ErrorType
 import com.ashehata.news.externals.showMessage
 import com.bumptech.glide.RequestManager
@@ -63,13 +64,15 @@ class HomeActivity : BaseActivity() {
                }
 
                val message = when(it.error) {
-                   is ErrorType.NoConnection -> getString(R.string.no_internet)
-                   is ErrorType.Error -> (it.error as ErrorType.Error).message
-                   ErrorType.NoError -> getString(R.string.success_message)
-                   else -> ""
+                   ErrorEntity.Network -> getString(R.string.no_internet)
+                   ErrorEntity.NotFound -> "Not Found"
+                   ErrorEntity.Unavailable -> "Unavailable"
+                   ErrorEntity.Unknown -> "Unknown error"
+                   ErrorEntity.AccessDenied -> "Access Denied"
+                   null -> ""
                }
 
-               if (!message.isEmpty()) {
+               if (message.isNotEmpty()) {
                    parent_view.showMessage(message)
                }
            }

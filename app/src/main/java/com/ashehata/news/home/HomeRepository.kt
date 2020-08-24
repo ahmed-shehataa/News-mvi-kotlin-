@@ -1,6 +1,8 @@
 package com.ashehata.news.home
 
 import com.ashehata.news.dataSource.RemoteData
+import com.ashehata.news.externals.Result
+import com.ashehata.news.externals.safeApiCall
 import com.ashehata.news.models.breakingNews.Articles
 import com.ashehata.news.models.source.Sources
 import kotlinx.coroutines.Dispatchers
@@ -9,14 +11,9 @@ import javax.inject.Inject
 
 class HomeRepository @Inject constructor(private val remoteData: RemoteData) {
 
-    suspend fun getNews() : Flow<List<Articles>> {
-        return flow {
-            // Get the response from api call
-            val response = remoteData.getBreakingNews()
-
-            // Emit list of articles
-            emit(response.articles)
-
+    suspend fun getNews() : Result<List<Articles>> {
+        return safeApiCall(Dispatchers.IO) {
+            remoteData.getBreakingNews().articles
         }
     }
 

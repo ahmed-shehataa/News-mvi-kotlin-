@@ -3,7 +3,10 @@ package com.ashehata.news.home
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.ashehata.news.base.BaseViewModel
+import com.ashehata.news.externals.ErrorEntity
 import com.ashehata.news.externals.ErrorType
+import com.ashehata.news.externals.Result
+import com.ashehata.news.models.breakingNews.Articles
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
@@ -41,18 +44,34 @@ class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCas
     }
 
     private suspend fun getArticles() {
-        useCase.getNews().catch {
-            catchError()
-
-        }.collect {
-            _stateChannel.value = getCurrentState().copy(
-                isLoading = false,
-                isRefreshing = false,
-                error = ErrorType.NoError,
-                listArticles = it
-            )
+        viewModelScope.launch {
+            val result = useCase.getNews()
+            when (result) {
+                is Result.Success -> showData(result.data)
+                is Result.Failed -> showError(result.error)
+            }
         }
+
     }
+
+    private fun showError(error: ErrorEntity) {
+        _stateChannel.value = getCurrentState().copy(
+            isLoading = false,
+            isRefreshing = false,
+            error = error,
+            listArticles = null
+        )
+    }
+
+    private fun showData(data: List<Articles>) {
+        _stateChannel.value = getCurrentState().copy(
+            isLoading = false,
+            isRefreshing = false,
+            error = null,
+            listArticles = data
+        )
+    }
+
 
     private suspend fun getSources() {
         useCase.getSources().catch {
@@ -62,7 +81,7 @@ class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCas
             _stateChannel.value = getCurrentState().copy(
                 isLoading = false,
                 isRefreshing = false,
-                error = ErrorType.NoError,
+                error = null,
                 listSources = it
             )
 
@@ -73,7 +92,7 @@ class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCas
         _stateChannel.value = getCurrentState().copy(
             isLoading = false,
             isRefreshing = false,
-            error = ErrorType.NoConnection
+            error = null
         )
     }
 
