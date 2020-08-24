@@ -30,6 +30,9 @@ MVI stands for **Model-View-Intent**. This pattern has been introduced recently 
 ## Free API
 [News API](https://newsapi.org/)
 
+## Res:  
+Error handling
+https://medium.com/@douglas.iacovelli/how-to-handle-errors-with-retrofit-and-coroutines-33e7492a912
 
 ## TODO
 
