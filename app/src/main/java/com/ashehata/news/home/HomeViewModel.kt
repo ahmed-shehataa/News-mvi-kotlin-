@@ -48,7 +48,8 @@ class HomeViewModel @ViewModelInject constructor(private val useCase: HomeUseCas
             val result = useCase.getNews()
             when (result) {
                 is Result.Success -> showData(result.data)
-                is Result.Failed -> showError(result.error)
+                is Result.GenericError -> showError(ErrorEntity.NotFound(result.error.message))
+                Result.NetworkError -> showError(ErrorEntity.Network)
             }
         }
 

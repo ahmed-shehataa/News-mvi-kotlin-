@@ -39,6 +39,13 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <Button
+        android:id="@+id/btn_pdf"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="create pdf"/>
     <ProgressBar
         android:id="@+id/pb_loading"
         android:layout_width="wrap_content"
