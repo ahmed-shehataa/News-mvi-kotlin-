@@ -1,25 +1,17 @@
 package com.ashehata.news.home
 
-import android.Manifest
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.ashehata.news.R
 import com.ashehata.news.base.BaseActivity
 import com.ashehata.news.externals.*
-import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets.UTF_16
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.*
 import javax.inject.Inject
 
 
@@ -54,7 +46,7 @@ class HomeActivity : BaseActivity() {
     private fun createPDF() {
         btn_pdf.setOnClickListener {
             if (allPermissionsGranted()) {
-                bytesToPDF("Hello world!")
+                stringToPDF("Hello world!")
             } else {
                 ActivityCompat.requestPermissions(
                     this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS

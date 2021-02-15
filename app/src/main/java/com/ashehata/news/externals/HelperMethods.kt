@@ -42,7 +42,7 @@ private fun Context.getOutputDirectory(): File {
         mediaDir else filesDir
 }
 
-fun Context.bytesToPDF(string: String) {
+fun Context.stringToPDF(string: String) {
     val doc = Document()
     try {
         val outputFile = File(
